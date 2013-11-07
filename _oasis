@@ -20,3 +20,11 @@ Executable open
   Path: lib_test
   MainIs: open.ml
   BuildDepends: vhdlib
+
+Executable zero
+  CompiledObject: byte
+  Install: false
+  Path: lib_test
+  MainIs: zero.ml
+  BuildDepends: vhdlib
+

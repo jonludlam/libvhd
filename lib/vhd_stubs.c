@@ -545,3 +545,45 @@ value stub_vhd_get_first_allocated_block(value vhd)
 
   CAMLreturn(caml_copy_int64(firstblock));
 }
+
+value stub_vhd_kill_data(value vhdval)
+{
+  CAMLparam1(vhdval);
+  vhd_context_t *vhd = Vhd_val(vhdval);
+
+  int err, map_bytes;
+  uint64_t i;
+  
+  err = vhd_get_bat(vhd);
+  if (err)
+    goto err_out;
+  
+  if (vhd_has_batmap(vhd)) {
+    err = vhd_get_batmap(vhd);
+    if (err)
+      goto err_out;
+  }
+  
+  for (i = 0; i < vhd->bat.entries; i++)
+    vhd->bat.bat[i] = DD_BLK_UNUSED;
+  err = vhd_write_bat(vhd, &vhd->bat);
+  if (err)
+    goto err_out;
+  
+  map_bytes = ((vhd->footer.curr_size >> VHD_SECTOR_SHIFT) /
+	       vhd->spb) >> 3;
+  map_bytes = vhd_sectors_to_bytes(secs_round_up_no_zero(map_bytes));
+  memset(vhd->batmap.map, 0, map_bytes);
+  err = vhd_write_batmap(vhd, &vhd->batmap);
+
+  if (!err && !vhd->is_block) // truncate file-based VHDs
+    err = vhd_write_footer(vhd, &vhd->footer);
+
+ err_out:
+
+  if(err) {
+    caml_failwith("Failed to zero VHD");
+  }
+
+  CAMLreturn(Val_unit);
+}
