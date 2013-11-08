@@ -123,6 +123,8 @@ external set_log_level : int -> unit = "stub_vhd_set_log_level"
 external set_parent : vhd -> string -> bool -> unit = "stub_vhd_set_parent"
 external get_bat : vhd -> (int*int) list = "stub_vhd_get_bat"
 external _get_first_allocated_block : vhd -> int64 = "stub_vhd_get_first_allocated_block"
+external kill_data : vhd -> unit = "stub_vhd_kill_data"
+
 
 let get_first_allocated_block vhd =
 	let blk = _get_first_allocated_block vhd in

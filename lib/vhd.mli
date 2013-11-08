@@ -92,3 +92,4 @@ val set_log_level : int -> unit
 val set_parent : vhd -> string -> bool -> unit
 val get_bat : vhd -> (int*int) list
 val get_first_allocated_block : vhd -> int64 option
+val kill_data : vhd -> unit
